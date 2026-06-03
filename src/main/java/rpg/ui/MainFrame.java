@@ -7,7 +7,7 @@ import java.awt.*;
 public class MainFrame extends JFrame {
 
     public MainFrame() {
-        super("⚔ Sistema RPG de Mesa");
+        super("⚔ Full Metal Cria RPG");
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1100, 720);
@@ -134,7 +134,7 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        JLabel title = new JLabel("  ⚔ SISTEMA RPG DE MESA");
+        JLabel title = new JLabel("  FULL METAL CRIA RPG");
 
         title.setFont(
                 Theme.fontTitle(20)
