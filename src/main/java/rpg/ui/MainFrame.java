@@ -105,7 +105,7 @@ public class MainFrame extends JFrame {
 
         tabs.addTab("👤  Personagens", new PersonagemPanel());
         tabs.addTab("🐾  Crias", new CriaPanel());
-        tabs.addTab("🔧  Oficina", new OficinaPanel());
+        tabs.addTab("📜 Ficha", new FichaPersonagemPanel());
         tabs.addTab("🎒  Inventário", new InventarioPanel());
 
         add(tabs, BorderLayout.CENTER);
