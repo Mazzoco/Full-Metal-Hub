@@ -15,6 +15,9 @@ public class CriaPanel extends JPanel {
     private JTextField txtNome, txtTipo;
     private JTextArea txtPersonalidade;
     private JComboBox<Cria.Chassi> cmbChassi;
+    private JLabel lblImagem;
+    private JButton btnSelecionarImagem;
+    private String imagemSelecionada;
 
     public CriaPanel() {
         setBackground(Theme.BG_DARK);
@@ -84,6 +87,19 @@ public class CriaPanel extends JPanel {
         txtPersonalidade = Theme.makeArea(4, 20);
         g.gridy = row++; card.add(Theme.makeScroll(txtPersonalidade), g);
 
+        g.gridy = row++;
+        card.add(Theme.makeLabel("Imagem"), g);
+        lblImagem = new JLabel("Sem imagem", SwingConstants.CENTER);
+        lblImagem.setPreferredSize(new Dimension(150,150));
+        lblImagem.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        g.gridy = row++;
+        card.add(lblImagem, g);
+        btnSelecionarImagem =
+        Theme.makeButton("Selecionar Imagem", Theme.ACCENT);
+        btnSelecionarImagem.addActionListener(e -> selecionarImagem());
+        g.gridy = row++;
+        card.add(btnSelecionarImagem, g);
+
         JPanel spacer = new JPanel(); spacer.setOpaque(false);
         g.gridy = row++; g.weighty = 1; card.add(spacer, g);
         g.weighty = 0;
@@ -109,11 +125,13 @@ public class CriaPanel extends JPanel {
     private void criar() {
         if (txtNome.getText().isBlank()) { warn("Nome é obrigatório."); return; }
         Cria c = new Cria(
-            txtNome.getText().trim(),
-            (Cria.Chassi) cmbChassi.getSelectedItem(),
-            txtPersonalidade.getText().trim(),
-            txtTipo.getText().trim()
-        );
+    txtNome.getText().trim(),
+    (Cria.Chassi) cmbChassi.getSelectedItem(),
+    txtPersonalidade.getText().trim(),
+    txtTipo.getText().trim()
+);
+
+c.setCaminhoImagem(imagemSelecionada);
         svc.getCrias().adicionar(c);
         limpar(); refreshTable();
         msg("Cria criada com sucesso!");
@@ -128,6 +146,7 @@ public class CriaPanel extends JPanel {
         c.setChassi((Cria.Chassi) cmbChassi.getSelectedItem());
         c.setTipo(txtTipo.getText().trim());
         c.setPersonalidade(txtPersonalidade.getText().trim());
+        c.setCaminhoImagem(imagemSelecionada);
         refreshTable(); msg("Cria atualizada!");
     }
 
@@ -156,6 +175,41 @@ public class CriaPanel extends JPanel {
         JOptionPane.showMessageDialog(this, info, "Cria: " + c.getNome(), JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void selecionarImagem() {
+
+    JFileChooser chooser = new JFileChooser();
+
+    chooser.setFileFilter(
+        new javax.swing.filechooser.FileNameExtensionFilter(
+            "Imagens",
+            "png",
+            "jpg",
+            "jpeg"
+        )
+    );
+
+    int resultado = chooser.showOpenDialog(this);
+
+    if(resultado == JFileChooser.APPROVE_OPTION){
+
+        imagemSelecionada =
+            chooser.getSelectedFile().getAbsolutePath();
+
+        ImageIcon icon =
+            new ImageIcon(imagemSelecionada);
+
+        Image img =
+            icon.getImage().getScaledInstance(
+                150,
+                150,
+                Image.SCALE_SMOOTH
+            );
+
+        lblImagem.setIcon(new ImageIcon(img));
+        lblImagem.setText("");
+    }
+}
+
     private void preencherForm() {
         int row = table.getSelectedRow();
         if (row < 0) return;
@@ -164,6 +218,23 @@ public class CriaPanel extends JPanel {
         cmbChassi.setSelectedItem(c.getChassi());
         txtTipo.setText(c.getTipo());
         txtPersonalidade.setText(c.getPersonalidade());
+        imagemSelecionada = c.getCaminhoImagem();
+if(imagemSelecionada != null &&
+   !imagemSelecionada.isBlank()) {
+    ImageIcon icon =
+        new ImageIcon(imagemSelecionada);
+    Image img =
+        icon.getImage().getScaledInstance(
+            150,
+            150,
+            Image.SCALE_SMOOTH
+        );
+    lblImagem.setIcon(new ImageIcon(img));
+    lblImagem.setText("");
+} else {
+    lblImagem.setIcon(null);
+    lblImagem.setText("Sem imagem");
+}
     }
 
     private void refreshTable() {
@@ -178,6 +249,11 @@ public class CriaPanel extends JPanel {
     private void limpar() {
         txtNome.setText(""); txtTipo.setText(""); txtPersonalidade.setText("");
         cmbChassi.setSelectedIndex(0); table.clearSelection();
+        imagemSelecionada = null;
+if(lblImagem != null){
+    lblImagem.setIcon(null);
+    lblImagem.setText("Sem imagem");
+}
     }
 
     private void msg(String m)  { JOptionPane.showMessageDialog(this, m, "OK",  JOptionPane.INFORMATION_MESSAGE); }

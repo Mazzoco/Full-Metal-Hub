@@ -14,6 +14,9 @@ public class PersonagemPanel extends JPanel {
     private JTable table;
 
     private JTextField txtNome, txtIdade, txtArquetipo, txtEscola;
+    private JLabel lblImagem;
+    private JButton btnSelecionarImagem;
+    private String imagemSelecionada;
 
     public PersonagemPanel() {
         setBackground(Theme.BG_DARK);
@@ -83,6 +86,19 @@ public class PersonagemPanel extends JPanel {
         txtEscola = Theme.makeField();
         g.gridy = row++; card.add(txtEscola, g);
 
+        g.gridy = row++;
+        card.add(Theme.makeLabel("Imagem"), g);
+        lblImagem = new JLabel("Sem imagem", SwingConstants.CENTER);
+        lblImagem.setPreferredSize(new Dimension(150,150));
+        lblImagem.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        g.gridy = row++;
+        card.add(lblImagem, g);
+        btnSelecionarImagem =
+        Theme.makeButton("Selecionar Imagem", Theme.ACCENT);
+        btnSelecionarImagem.addActionListener(e -> selecionarImagem());
+        g.gridy = row++;
+        card.add(btnSelecionarImagem, g);
+
         // Spacer
         JPanel spacer = new JPanel(); spacer.setOpaque(false);
         g.gridy = row++; g.weighty = 1; card.add(spacer, g);
@@ -116,11 +132,12 @@ public class PersonagemPanel extends JPanel {
     private void criar() {
         if (!validar()) return;
         Personagem p = new Personagem(
-            txtNome.getText().trim(),
-            parseIdade(),
-            txtArquetipo.getText().trim(),
-            txtEscola.getText().trim()
-        );
+    txtNome.getText().trim(),
+    parseIdade(),
+    txtArquetipo.getText().trim(),
+    txtEscola.getText().trim()
+);
+    p.setCaminhoImagem(imagemSelecionada);
         svc.getPersonagens().adicionar(p);
         limparForm();
         refreshTable();
@@ -136,6 +153,7 @@ public class PersonagemPanel extends JPanel {
         p.setIdade(parseIdade());
         p.setArquetipo(txtArquetipo.getText().trim());
         p.setEscola(txtEscola.getText().trim());
+        p.setCaminhoImagem(imagemSelecionada);
         refreshTable();
         showMsg("Personagem atualizado!");
     }
@@ -166,6 +184,33 @@ public class PersonagemPanel extends JPanel {
         JOptionPane.showMessageDialog(this, info, "Ficha de " + p.getNome(), JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void selecionarImagem() {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileFilter(
+        new javax.swing.filechooser.FileNameExtensionFilter(
+            "Imagens",
+            "png",
+            "jpg",
+            "jpeg"
+        )
+    );
+    int resultado = chooser.showOpenDialog(this);
+    if(resultado == JFileChooser.APPROVE_OPTION){
+        imagemSelecionada =
+            chooser.getSelectedFile().getAbsolutePath();
+        ImageIcon icon =
+            new ImageIcon(imagemSelecionada);
+        Image img =
+            icon.getImage().getScaledInstance(
+                150,
+                150,
+                Image.SCALE_SMOOTH
+            );
+        lblImagem.setIcon(new ImageIcon(img));
+        lblImagem.setText("");
+    }
+}
+
     private void preencherFormulario() {
         int row = table.getSelectedRow();
         if (row < 0) return;
@@ -174,6 +219,23 @@ public class PersonagemPanel extends JPanel {
         txtIdade.setText(String.valueOf(p.getIdade()));
         txtArquetipo.setText(p.getArquetipo());
         txtEscola.setText(p.getEscola());
+        imagemSelecionada = p.getCaminhoImagem();
+if(imagemSelecionada != null &&
+   !imagemSelecionada.isBlank()) {
+    ImageIcon icon =
+        new ImageIcon(imagemSelecionada);
+    Image img =
+        icon.getImage().getScaledInstance(
+            150,
+            150,
+            Image.SCALE_SMOOTH
+        );
+    lblImagem.setIcon(new ImageIcon(img));
+    lblImagem.setText("");
+} else {
+    lblImagem.setIcon(null);
+    lblImagem.setText("Sem imagem");
+}
     }
 
     private void refreshTable() {
@@ -187,6 +249,9 @@ public class PersonagemPanel extends JPanel {
         txtNome.setText(""); txtIdade.setText("");
         txtArquetipo.setText(""); txtEscola.setText("");
         table.clearSelection();
+        imagemSelecionada = null;
+        lblImagem.setIcon(null);
+        lblImagem.setText("Sem imagem");
     }
 
     private boolean validar() {

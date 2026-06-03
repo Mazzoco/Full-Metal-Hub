@@ -1,12 +1,14 @@
 package rpg.ui;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
 
     public MainFrame() {
         super("⚔ Sistema RPG de Mesa");
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(1100, 720);
         setMinimumSize(new Dimension(900, 600));
@@ -15,48 +17,155 @@ public class MainFrame extends JFrame {
         getContentPane().setBackground(Theme.BG_DARK);
         setLayout(new BorderLayout());
 
-        // Header
-        JPanel header = buildHeader();
-        add(header, BorderLayout.NORTH);
+        add(buildHeader(), BorderLayout.NORTH);
 
-        // Tabs
         JTabbedPane tabs = new JTabbedPane(JTabbedPane.LEFT);
+
+        tabs.setFont(Theme.fontBody(15));
         tabs.setBackground(Theme.BG_PANEL);
-        tabs.setForeground(Theme.TEXT_PRIMARY);
-        tabs.setFont(Theme.fontBody(14));
-        tabs.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabs.setForeground(Color.WHITE);
+
+        tabs.setUI(new BasicTabbedPaneUI() {
+
+            @Override
+            protected void paintTabBackground(
+                    Graphics g,
+                    int tabPlacement,
+                    int tabIndex,
+                    int x,
+                    int y,
+                    int w,
+                    int h,
+                    boolean isSelected) {
+
+                Graphics2D g2 = (Graphics2D) g;
+
+                g2.setColor(
+                        isSelected
+                                ? Theme.ACCENT
+                                : Theme.BG_CARD
+                );
+
+                g2.fillRect(x, y, w, h);
+            }
+
+            @Override
+            protected void paintText(
+                    Graphics g,
+                    int tabPlacement,
+                    Font font,
+                    FontMetrics metrics,
+                    int tabIndex,
+                    String title,
+                    Rectangle textRect,
+                    boolean isSelected) {
+
+                Graphics2D g2 = (Graphics2D) g;
+
+                g2.setFont(font.deriveFont(Font.BOLD));
+
+                g2.setColor(
+                        isSelected
+                                ? Color.BLACK
+                                : Color.WHITE
+                );
+
+                g2.drawString(
+                        title,
+                        textRect.x,
+                        textRect.y + metrics.getAscent()
+                );
+            }
+
+            @Override
+            protected Insets getTabInsets(
+                    int tabPlacement,
+                    int tabIndex) {
+
+                return new Insets(
+                        15,
+                        20,
+                        15,
+                        20
+                );
+            }
+
+            @Override
+            protected void paintFocusIndicator(
+                    Graphics g,
+                    int tabPlacement,
+                    Rectangle[] rects,
+                    int tabIndex,
+                    Rectangle iconRect,
+                    Rectangle textRect,
+                    boolean isSelected) {
+                // Remove borda de foco
+            }
+        });
 
         tabs.addTab("👤  Personagens", new PersonagemPanel());
-        tabs.addTab("🐾  Crias",        new CriaPanel());
-        tabs.addTab("🔧  Oficina",      new OficinaPanel());
-        tabs.addTab("🎒  Inventário",   new InventarioPanel());
-
-        // Tab styling
-        UIManager.put("TabbedPane.selected",            Theme.BG_CARD);
-        UIManager.put("TabbedPane.background",          Theme.BG_PANEL);
-        UIManager.put("TabbedPane.foreground",          Theme.TEXT_PRIMARY);
-        UIManager.put("TabbedPane.contentAreaColor",    Theme.BG_PANEL);
-        UIManager.put("TabbedPane.tabInsets",           new Insets(10, 14, 10, 14));
+        tabs.addTab("🐾  Crias", new CriaPanel());
+        tabs.addTab("🔧  Oficina", new OficinaPanel());
+        tabs.addTab("🎒  Inventário", new InventarioPanel());
 
         add(tabs, BorderLayout.CENTER);
     }
 
     private JPanel buildHeader() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBackground(Theme.BG_PANEL);
-        p.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Theme.ACCENT));
-        p.setPreferredSize(new Dimension(0, 52));
 
-        JLabel title = new JLabel("  ⚔  SISTEMA RPG DE MESA");
-        title.setFont(Theme.fontTitle(18));
-        title.setForeground(Theme.ACCENT);
-        p.add(title, BorderLayout.WEST);
+        JPanel header = new JPanel(new BorderLayout());
 
-        JLabel sub = new JLabel("Gerenciador de Fichas & Crias  ");
-        sub.setFont(Theme.fontBody(12));
-        sub.setForeground(Theme.TEXT_MUTED);
-        p.add(sub, BorderLayout.EAST);
+        header.setBackground(Theme.BG_PANEL);
 
-        return p;
+        header.setBorder(
+                BorderFactory.createMatteBorder(
+                        0,
+                        0,
+                        2,
+                        0,
+                        Theme.ACCENT
+                )
+        );
+
+        header.setPreferredSize(
+                new Dimension(
+                        0,
+                        60
+                )
+        );
+
+        JLabel title = new JLabel("  ⚔ SISTEMA RPG DE MESA");
+
+        title.setFont(
+                Theme.fontTitle(20)
+        );
+
+        title.setForeground(
+                Theme.ACCENT
+        );
+
+        JLabel subtitle = new JLabel(
+                "Gerenciador de Fichas & Crias  "
+        );
+
+        subtitle.setFont(
+                Theme.fontBody(13)
+        );
+
+        subtitle.setForeground(
+                Theme.TEXT_LIGHT
+        );
+
+        header.add(
+                title,
+                BorderLayout.WEST
+        );
+
+        header.add(
+                subtitle,
+                BorderLayout.EAST
+        );
+
+        return header;
     }
 }

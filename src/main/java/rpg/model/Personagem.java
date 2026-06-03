@@ -8,6 +8,7 @@ public class Personagem {
     private int idade;
     private String arquetipo;
     private String escola;
+    private String caminhoImagem;
 
     public Personagem() {
         this.id = UUID.randomUUID().toString();
@@ -31,6 +32,8 @@ public class Personagem {
     public void setArquetipo(String arquetipo) { this.arquetipo = arquetipo; }
     public String getEscola() { return escola; }
     public void setEscola(String escola) { this.escola = escola; }
+    public String getCaminhoImagem() { return caminhoImagem; }
+    public void setCaminhoImagem(String caminhoImagem) { this.caminhoImagem = caminhoImagem; }
 
     @Override
     public String toString() { return nome; }
